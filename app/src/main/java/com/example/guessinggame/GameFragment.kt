@@ -6,23 +6,24 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.example.guessinggame.databinding.GamefragmentBinding
+import com.example.guessinggame.GameViewModel
+
 
 class GameFragment : Fragment() {
+lateinit var viewmodel:GameViewModel
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        var tt=e
+
     }
 
     private var _Binding: GamefragmentBinding? = null
     val Binding get() = _Binding!!
-    val word = listOf("Android", "Activity", "Fragment")
-    val secretword = word.random().uppercase()
-    var secretWordDisplay = ""
-    var correctGuess = ""
-    var incorrectGuess = ""
-    var livesLeft = 8
+
 
 
     override fun onCreateView(
@@ -31,10 +32,11 @@ class GameFragment : Fragment() {
         savedInstanceState: Bundle?,
 
         ): View? {
+        viewmodel = ViewModelProvider(this)[GameViewModel::class.java]
 
         _Binding = GamefragmentBinding.inflate(inflater, container, false)
         var view = Binding.root
-        secretWordDisplay = deriveSecretWordDisplay()
+
         updateScreen()
         Binding.guessButton.setOnClickListener() {
             makeGuess(Binding.guess.text.toString().uppercase())
@@ -60,42 +62,5 @@ class GameFragment : Fragment() {
         Binding.word.text = secretWordDisplay
         Binding.lives.text = "you have $livesLeft lives left"
         Binding.incorrectGuesses.text = "incorrect guesses :$incorrectGuess"
-    }
-
-    fun deriveSecretWordDisplay(): String {
-        var display = ""
-        secretword.forEach {
-            display += checkLetter(it.toString())
-        }
-        return display
-    }
-
-    fun checkLetter(str: String) = when (correctGuess.contains(str)) {
-        true -> str
-        false -> ""
-    }
-
-    fun makeGuess(guess: String) {
-        if (guess.length == 1) {
-            if (secretword.contains(guess)) {
-                correctGuess += guess
-                secretWordDisplay = deriveSecretWordDisplay()
-            } else {
-                incorrectGuess += guess
-                livesLeft--
-            }
-        }
-    }
-
-    private fun isWon() = secretword.equals(secretWordDisplay, true)
-    private fun isLost() = livesLeft <= 0
-    fun WonLostMessage(): String {
-        var message = ""
-        if (isWon())
-            message = "you WON!"
-        else if (isLost())
-            message = "you LOST!"
-        message += "the word was $secretword"
-        return message
     }
 }
